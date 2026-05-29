@@ -148,9 +148,9 @@ const refreshTodosFromSqlite = () => {
   todos.value = listTodosFromSqlite()
 }
 
-const addTodo=(draft: TodoDraft)=>{
+const addTodo = async (draft: TodoDraft) => {
   if (isUsingSqlite.value) {
-    insertTodoIntoSqlite(draft, today)
+    await insertTodoIntoSqlite(draft, today)
     refreshTodosFromSqlite()
     return
   }
@@ -167,20 +167,20 @@ const addTodo=(draft: TodoDraft)=>{
   
 }
 
-const toggleTodo = (id: number) => {
+const toggleTodo = async (id: number) => {
   const todo = todos.value.find((item) => item.id === id)
   if (!todo) return
   if (isUsingSqlite.value) {
-    updateTodoCompletedInSqlite(id, !todo.completed)
+    await updateTodoCompletedInSqlite(id, !todo.completed)
     refreshTodosFromSqlite()
     return
   }
   todo.completed = !todo.completed
 }
 
-const deleteTodo = (id: number) => {
+const deleteTodo = async (id: number) => {
   if (isUsingSqlite.value) {
-    deleteTodoFromSqlite(id)
+    await deleteTodoFromSqlite(id)
     refreshTodosFromSqlite()
     return
   }
@@ -193,9 +193,9 @@ const completeFilteredTodos = () => {
   })
 }
 
-const clearCompletedTodos = () => {
+const clearCompletedTodos = async () => {
   if (isUsingSqlite.value) {
-    deleteCompletedTodosFromSqlite()
+    await deleteCompletedTodosFromSqlite()
     refreshTodosFromSqlite()
     return
   }
@@ -222,7 +222,7 @@ onMounted(async () => {
   try {
     await initializeTodoDatabase(defaultTodos())
     refreshTodosFromSqlite()
-    dataSourceLabel.value = 'Browser SQLite'
+    dataSourceLabel.value = 'Persistent browser SQLite'
     isUsingSqlite.value = true
   } catch {
     todos.value = defaultTodos()
